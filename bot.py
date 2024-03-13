@@ -1,25 +1,22 @@
 import os, wave
-from piper.voice import PiperVoice as piper #Backbone of text to speech
-from dotenv import load_dotenv
+
 from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-from utils import preprocess_text
 
-load_dotenv()
+
 
 Bot = Client(
-    "PersianT2SBot",
+    "audioBot",
     bot_token = os.environ["BOT_TOKEN"],
     api_id = int(os.environ["API_ID"]),
     api_hash = os.environ["API_HASH"]
 )
-voice = piper.load("fa_model/gyro_model.onnx")
 
 
 START_TXT = """
-Hi {}, I'm Persian TTS Bot.
+Hi {}, I'm audio denoiser Bot.
 
-Just send me your text.
+Just send me an audio file.
 """
 
 START_BTN = InlineKeyboardMarkup(
@@ -40,18 +37,18 @@ async def start(bot, update):
 )
 
 
-@Bot.on_message(filters.private & filters.text)
+@Bot.on_message(filters.private & filters.audio)
 async def t2s(bot, m):
     msg = await m.reply("Processing..")
-    input = m.text.replace('\n', ' ').replace('  ', ' ')
-    corrected = preprocess_text(input)
-    output_1 = "output.wav"
-    with wave.open(output_1, "wb") as wav_file:
-        voice.synthesize(str(corrected), wav_file)
-    await bot.send_audio(chat_id=m.chat.id, audio=output_1)
+    input = await bot.download_media(message=m)
+    wav = "output.wav"
+    
+    await msg.edit_text("`Converting to wave...`")
+    os.system(f'ffmpeg -i "{input}" -vn -y {wav}')
+    await msg.edit_text("`Now Processing...`")
 
+    await m.reply_audio(den)
     await msg.delete()
-    os.remove(output_1)
-
+    os.remove(input)
 
 Bot.run()
