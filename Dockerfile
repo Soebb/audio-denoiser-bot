@@ -7,4 +7,4 @@ COPY . ./
 RUN apt-get update && apt-get -y install python3-pip ffmpeg
 RUN pip3 install pyrogram tgcrypto denoisers
 EXPOSE 5000
-CMD ["python3", "main.py"]
+CMD ["python3", "bot.py"]
