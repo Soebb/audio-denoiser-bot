@@ -4,7 +4,7 @@ USER $USER
 RUN python3 -m venv venv
 WORKDIR /app
 COPY . ./
-RUN apt-get update && apt-get -y install python3-pip ffmpeg
-RUN pip3 install pyrogram tgcrypto denoisers torch==2.2.0 torchaudio==2.2.0 tqdm==4.66.2
+RUN apt-get update && apt-get -y install python3-pip
+RUN pip3 install pyrogram tgcrypto denoisers static_ffmpeg
 EXPOSE 5000
 CMD ["python3", "bot.py"]
